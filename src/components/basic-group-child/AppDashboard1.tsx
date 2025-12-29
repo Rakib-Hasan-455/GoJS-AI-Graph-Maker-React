@@ -1,0 +1,98 @@
+import {useEffect, useState} from "react";
+import {LeftNavBar} from "../simple-mindmap/LeftNavBar.tsx";
+import {TopNavBar} from "../simple-mindmap/TopNavBar.tsx";
+import BasicDiagram1 from "./BasicGroupChild1";
+import {toast} from "react-toastify";
+import {Save} from "lucide-react";
+
+
+function AppDashboard1() {
+    const [isNavOpen, setIsNavOpen] = useState(false);
+    const [nodeDataArray, setNodeDataArray] = useState();
+    const [linkDataArray, setLinkDataArray] = useState();
+
+    useEffect(() => {
+        fetch("http://localhost:8081/mindgraph/getLinkDataGraph")
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error("Failed to fetch data");
+                }
+                return res.json();
+            })
+            .then((result) => {
+                console.log(result);
+                setNodeDataArray(result.content.content.nodeDataArray);
+                setLinkDataArray(result.content.content.linkDataArray);
+                console.log(result.content.content)
+            })
+            .catch(() => {
+
+            });
+    }, []);
+
+
+    const handleSaveGraph = () => {
+        fetch("http://localhost:8081/mindgraph/saveLinkDataGraph", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({content: {"nodeDataArray": nodeDataArray, "linkDataArray": linkDataArray}}),
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error("Failed to save data");
+                }
+                return res.json();
+            })
+            .then((result) => {
+                toast("Successfully saved graph!", {type: "success"});
+                setLinkDataArray(result.content.content.linkDataArray);
+                setNodeDataArray(result.content.content.nodeDataArray);
+                console.log("Graph saved successfully:", result);
+            })
+            .catch((error) => {
+                console.error("Error saving graph:", error);
+            });
+    }
+
+    return (
+        <div className="flex h-screen bg-gray-100">
+            <LeftNavBar isOpen={isNavOpen} onClose={() => setIsNavOpen(false)} />
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <TopNavBar onMenuClick={() => setIsNavOpen(true)} />
+
+                <main className="flex-1 overflow-hidden">
+                    <div className="h-full p-6">
+                        <div className="bg-white rounded-lg shadow-lg h-full overflow-hidden">
+                            <div className="p-4 border-b border-gray-200">
+                                <h2 className="text-lg font-semibold text-gray-800">
+                                    Interactive Mind Map
+                                </h2>
+                                <p className="text-sm text-gray-600 mt-1">
+                                    Click the + button on any node to add a child node
+                                </p>
+                            </div>
+                            <div className="h-[calc(100%-80px) ]">
+
+                                <div className="flex justify-end p-4 border-b border-gray-200">
+                                    <button onClick={handleSaveGraph}
+                                            className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-white font-bold p-1 rounded">
+                                        <Save size={15}/>
+                                    </button>
+
+                                </div>
+                                    <BasicDiagram1 linkDataArray={linkDataArray} nodeDataArray={nodeDataArray} />
+
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+
+        </div>
+    );
+}
+
+export default AppDashboard1;
