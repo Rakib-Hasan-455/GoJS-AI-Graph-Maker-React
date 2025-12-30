@@ -8,6 +8,7 @@ import type {ObjectData} from "gojs";
 import {Save} from "lucide-react";
 import {toast} from "react-toastify";
 import go from "gojs";
+import {envUrl} from "../../main.tsx";
 
 function AppDashboard() {
     const [isNavOpen, setIsNavOpen] = useState(false);
@@ -25,7 +26,7 @@ function AppDashboard() {
     };
 
     useEffect(() => {
-        fetch("http://localhost:8081/mindgraph/getSimpleGraph")
+        fetch(envUrl + "mindgraph/getSimpleGraph")
             .then((res) => {
                 if (!res.ok) {
                     throw new Error("Failed to fetch data");
@@ -72,7 +73,7 @@ function AppDashboard() {
     };
 
     const handleSaveGraph = () => {
-        fetch("http://localhost:8081/mindgraph/saveSimpleGraph", {
+        fetch(envUrl + "mindgraph/saveSimpleGraph", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

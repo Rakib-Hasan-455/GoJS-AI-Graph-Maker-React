@@ -4,6 +4,7 @@ import {TopNavBar} from "../simple-mindmap/TopNavBar.tsx";
 import BasicDiagram1 from "./BasicGroupChild1";
 import {toast} from "react-toastify";
 import {Save} from "lucide-react";
+import {envUrl} from "../../main.tsx";
 
 
 function AppDashboard1() {
@@ -12,7 +13,7 @@ function AppDashboard1() {
     const [linkDataArray, setLinkDataArray] = useState();
 
     useEffect(() => {
-        fetch("http://localhost:8081/mindgraph/getLinkDataGraph")
+        fetch(envUrl + "mindgraph/getLinkDataGraph")
             .then((res) => {
                 if (!res.ok) {
                     throw new Error("Failed to fetch data");
@@ -32,7 +33,7 @@ function AppDashboard1() {
 
 
     const handleSaveGraph = () => {
-        fetch("http://localhost:8081/mindgraph/saveLinkDataGraph", {
+        fetch(envUrl +  "mindgraph/saveLinkDataGraph", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
